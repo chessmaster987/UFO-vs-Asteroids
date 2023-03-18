@@ -18,7 +18,7 @@ image_enemy = pygame.image.load('./imgs/asteroid.jpg')
 
 obj_x = width // 2
 obj_y = height // 2
-obj_speed = 5
+obj_speed = 7
 
 def create_enemy():
    enemy = pygame.Surface((20, 20))
@@ -44,19 +44,29 @@ while running:
    main_window.blit(image_obj, (obj_x, obj_y))
 
    keys = pygame.key.get_pressed()
-   if keys[pygame.K_LEFT]:
+   obj_rect = pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())
+   if keys[pygame.K_LEFT] and not obj_rect.left <= 0:
       obj_x -= obj_speed
-   if keys[pygame.K_RIGHT]:
+   if keys[pygame.K_RIGHT] and not obj_rect.right >= width:
       obj_x += obj_speed
-   if keys[pygame.K_UP]:
+   if keys[pygame.K_UP] and not obj_rect.top <= 0:
       obj_y -= obj_speed
-   if keys[pygame.K_DOWN]:
+   if keys[pygame.K_DOWN]and not obj_rect.bottom >= height:
       obj_y += obj_speed
-   
+
    for enemy in enemies:
+      # Move enemy and blit to screen
       enemy[1] = enemy[1].move(-enemy[2], 0)
       main_window.blit(image_enemy, enemy[1])
+      
+      # Remove enemies that go off screen
       if enemy[1].left < 0:
-         enemies.pop(enemies.index(enemy)) #clear the left asteroids
+         enemies.pop(enemies.index(enemy))
+      
+      # Check for collision with object
+      if enemy[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
+         enemies.remove(enemy)
          
    pygame.display.flip()
+
+   
