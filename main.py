@@ -15,10 +15,11 @@ main_window = pygame.display.set_mode(screen)
 
 image_obj = pygame.image.load('./imgs/ufo.jpg')
 image_enemy = pygame.image.load('./imgs/asteroid.jpg')
+image_weapon = pygame.image.load('./imgs/weapon.jpg')
 
 obj_x = width // 2
 obj_y = height // 2
-obj_speed = 7
+obj_speed = 10
 
 def create_enemy():
    enemy = pygame.Surface((20, 20))
@@ -26,10 +27,22 @@ def create_enemy():
    enemy_speed = rd.randint(5, 10)
    return [enemy, enemy_rect, enemy_speed]
 
+def create_weapon():
+   weapon_x = rd.randrange(0, width)
+   weapon_y = 0
+   weapon = pygame.Surface((20, 20))
+   obj_rect = pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())
+   weapon_rect = pygame.Rect(weapon_x, weapon_y, *weapon.get_size())
+   weapon_speed = 1
+   return [weapon, weapon_rect, weapon_speed]
+
 CREATE_ENEMY = pygame.USEREVENT + 1
-pygame.time.set_timer(CREATE_ENEMY, 750) #time of creating asteroids
+pygame.time.set_timer(CREATE_ENEMY, 1000) #time of creating asteroids
+CREATE_WEAPON = pygame.USEREVENT + 1
+pygame.time.set_timer(CREATE_WEAPON, 2000) #time of creating weapons
   
 enemies = []
+weapons = []
 
 running = True
 while running:
@@ -39,6 +52,8 @@ while running:
          running = False 
       if event.type == CREATE_ENEMY:
          enemies.append(create_enemy())
+      if event.type == CREATE_WEAPON:
+         weapons.append(create_weapon())
 
    main_window.fill((WHITE))
    main_window.blit(image_obj, (obj_x, obj_y))
@@ -67,6 +82,19 @@ while running:
       if enemy[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
          enemies.remove(enemy)
          
+   for weapon in weapons:
+      # Move weapon and blit to screen
+      weapon[1] = weapon[1].move(0, weapon[2])
+      main_window.blit(image_weapon, weapon[1])
+         
+      # Remove weapons that go off screen
+      if weapon[1].bottom >= height:
+         weapons.pop(weapons.index(weapon))
+         
+      # Check for collision with object
+      if weapon[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
+         weapons.remove(weapon)
+
    pygame.display.flip()
 
    
