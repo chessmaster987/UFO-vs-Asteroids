@@ -15,9 +15,9 @@ screen = width, height = (1500, 800)
 main_window = pygame.display.set_mode(screen)
 
 image_obj = pygame.transform.scale(pygame.image.load('./imgs/ufo.png').convert_alpha(), (45, 45))
-image_enemy = pygame.transform.scale(pygame.image.load('./imgs/asteroid.png').convert_alpha(), (60, 50))
-image_weapon = pygame.transform.scale(pygame.image.load('./imgs/weapon.jpg').convert_alpha(), (45, 35))
-image_bckg = pygame.transform.scale(pygame.image.load('./imgs/bckg.jpg').convert(), screen) 
+image_enemy = pygame.transform.scale(pygame.image.load('./imgs/asteroid.png').convert_alpha(), (70, 50))
+image_weapon = pygame.transform.scale(pygame.image.load('./imgs/weapon.png').convert_alpha(), (45, 35))
+image_bckg = pygame.transform.scale(pygame.image.load('./imgs/background.jpg').convert(), screen) 
 
 bckgX = 0
 bckgX2 = image_bckg.get_width()
@@ -65,10 +65,14 @@ while running:
       if event.type == CREATE_WEAPON:
          weapons.append(create_weapon())
 
-   #main_window.blit(image_bckg, (0, 0))
-
    bckgX -= image_bckg_speed
    bckgX2 -= image_bckg_speed
+   if bckgX < -image_bckg.get_width():
+      bckgX = image_bckg.get_width()
+
+   if bckgX2 < -image_bckg.get_width():
+      bckgX2 = image_bckg.get_width()
+
    main_window.blit(image_bckg, (bckgX, 0))
    main_window.blit(image_bckg, (bckgX2, 0))
 
