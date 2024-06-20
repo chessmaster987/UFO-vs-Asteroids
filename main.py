@@ -78,6 +78,44 @@ score = 0
 enemies = []
 weapons = []
 
+def get_name():
+    name = ""
+    input_active = True
+    input_box = pygame.Rect(width // 2 - 100, height // 2 - 32, 200, 64)
+    font = pygame.font.Font(None, 48)
+    prompt_font = pygame.font.Font(None, 36)
+    prompt_text = "Enter your name"
+
+    while input_active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    input_active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+                else:
+                    name += event.unicode
+
+        main_window.fill((0, 0, 0))
+        # Render and display the prompt text
+        prompt_surface = prompt_font.render(prompt_text, True, WHITE)
+        prompt_rect = prompt_surface.get_rect(center=(width // 2, height // 2 - 80))
+        main_window.blit(prompt_surface, prompt_rect)
+
+        # Render and display the input text
+        txt_surface = font.render(name, True, WHITE)
+        main_window.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+        pygame.draw.rect(main_window, WHITE, input_box, 2)
+        pygame.display.flip()
+
+    return name
+
+# Get player's name
+player_name = get_name()
+
 # Main game loop
 running = True
 while running:
@@ -138,7 +176,7 @@ while running:
         # Check for collision with object
         if enemy[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
             text = my_font.render(
-                f'YOU EARNED {score} POINTS', True, (0, 255, 0))
+                f'{player_name} EARNED {score} POINTS', True, (0, 255, 0))
             text_rect = text.get_rect()
             text_x = width // 2 - text_rect.width // 2
             text_y = height // 2 - text_rect.height // 2
