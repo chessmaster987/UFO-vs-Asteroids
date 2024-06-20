@@ -14,6 +14,7 @@ FPS = pygame.time.Clock()
 
 # Define colors
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 # Set up the screen
 screen = width, height = (1500, 800)
@@ -40,8 +41,6 @@ obj_y = height // 2
 obj_speed = 10
 
 # Function to create an enemy
-
-
 def create_enemy():
     enemy = pygame.Surface((20, 20))
     enemy_rect = pygame.Rect(width, rd.randint(0, height), *enemy.get_size())
@@ -49,8 +48,6 @@ def create_enemy():
     return [enemy, enemy_rect, enemy_speed]
 
 # Function to create a weapon
-
-
 def create_weapon():
     weapon_x = rd.randrange(0, width)
     weapon_y = 0
@@ -78,7 +75,51 @@ score = 0
 enemies = []
 weapons = []
 
+# Define Button class
+class Button:
+    def __init__(self, x, y, width, height, text, action=None):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = WHITE
+        self.text = text
+        self.action = action
+        self.font = pygame.font.Font(None, 36)
+    
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+        text_surface = self.font.render(self.text, True, BLACK)
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        surface.blit(text_surface, text_rect)
+    
+    def clicked(self):
+        # Perform action associated with the button
+        if self.action:
+            self.action()
+
+# Function to start the game
+def start_game():
+    global game_state
+    game_state = "enter_name"
+
+# Function to initialize game variables
+def initialize_game():
+    global obj_x, obj_y, score, enemies, weapons
+    obj_x = width // 2
+    obj_y = height // 2
+    score = 0
+    enemies = []
+    weapons = []
+
+# Function to handle game archive
+def game_archive():
+    print("Game archive functionality goes here.")
+
+# Function to quit the game
+def quit_game():
+    pygame.quit()
+    exit()
+
 def get_name():
+    global player_name, game_state
     name = ""
     input_active = True
     input_box = pygame.Rect(width // 2 - 100, height // 2 - 32, 200, 64)
@@ -111,10 +152,20 @@ def get_name():
         pygame.draw.rect(main_window, WHITE, input_box, 2)
         pygame.display.flip()
 
-    return name
+    player_name = name
+    game_state = "game"
+    initialize_game()
 
 # Get player's name
-player_name = get_name()
+#player_name = get_name()
+
+# Initialize buttons for the main menu
+start_button = Button(width // 2 - 100, height // 2 - 100, 200, 50, "Start Game", start_game)
+archive_button = Button(width // 2 - 100, height // 2, 200, 50, "Game Archive", game_archive)
+quit_button = Button(width // 2 - 100, height // 2 + 100, 200, 50, "Quit Game", quit_game)
+
+# Main game state
+game_state = "menu"
 
 # Main game loop
 running = True
@@ -126,79 +177,101 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == CREATE_ENEMY:
-            enemies.append(create_enemy())
-        if event.type == CREATE_WEAPON:
-            weapons.append(create_weapon())
+        if game_state == "game":
+            if event.type == CREATE_ENEMY:
+                enemies.append(create_enemy())
+            if event.type == CREATE_WEAPON:
+                weapons.append(create_weapon())
+        elif game_state == "menu":
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if start_button.rect.collidepoint(event.pos):
+                    start_button.clicked()
+                if archive_button.rect.collidepoint(event.pos):
+                    archive_button.clicked()
+                if quit_button.rect.collidepoint(event.pos):
+                    quit_button.clicked()
+        elif game_state == "enter_name":
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    get_name()
 
-    # Background scrolling
-    bckgX -= image_bckg_speed
-    bckgX2 -= image_bckg_speed
-    if bckgX < -image_bckg.get_width():
-        bckgX = image_bckg.get_width()
-    if bckgX2 < -image_bckg.get_width():
-        bckgX2 = image_bckg.get_width()
+    if game_state == "menu":
+        main_window.fill(BLACK)
+        start_button.draw(main_window)
+        archive_button.draw(main_window)
+        quit_button.draw(main_window)
+        pygame.display.flip()
+    elif game_state == "enter_name":
+        get_name()
+    elif game_state == "game":
+        # Background scrolling
+        bckgX -= image_bckg_speed
+        bckgX2 -= image_bckg_speed
+        if bckgX < -image_bckg.get_width():
+            bckgX = image_bckg.get_width()
+        if bckgX2 < -image_bckg.get_width():
+            bckgX2 = image_bckg.get_width()
 
-    # Draw the background
-    main_window.blit(image_bckg, (bckgX, 0))
-    main_window.blit(image_bckg, (bckgX2, 0))
+        # Draw the background
+        main_window.blit(image_bckg, (bckgX, 0))
+        main_window.blit(image_bckg, (bckgX2, 0))
 
-    # Draw the UFO
-    main_window.blit(image_obj, (obj_x, obj_y))
+        # Draw the UFO
+        main_window.blit(image_obj, (obj_x, obj_y))
 
-    # Handle UFO movement
-    keys = pygame.key.get_pressed()
-    obj_rect = pygame.Rect(
-        obj_x, obj_y, image_obj.get_width(), image_obj.get_height())
-    if keys[pygame.K_LEFT] and not obj_rect.left <= 0:
-        obj_x -= obj_speed
-    if keys[pygame.K_RIGHT] and not obj_rect.right >= width:
-        obj_x += obj_speed
-    if keys[pygame.K_UP] and not obj_rect.top <= 0:
-        obj_y -= obj_speed
-    if keys[pygame.K_DOWN] and not obj_rect.bottom >= height:
-        obj_y += obj_speed
+        # Handle UFO movement
+        keys = pygame.key.get_pressed()
+        obj_rect = pygame.Rect(
+            obj_x, obj_y, image_obj.get_width(), image_obj.get_height())
+        if keys[pygame.K_LEFT] and not obj_rect.left <= 0:
+            obj_x -= obj_speed
+        if keys[pygame.K_RIGHT] and not obj_rect.right >= width:
+            obj_x += obj_speed
+        if keys[pygame.K_UP] and not obj_rect.top <= 0:
+            obj_y -= obj_speed
+        if keys[pygame.K_DOWN] and not obj_rect.bottom >= height:
+            obj_y += obj_speed
 
-    # Display the score
-    main_window.blit(my_font.render(
-        str(score), True, (255, 0, 0)), (width // 2, 5))
+        # Display the score
+        main_window.blit(my_font.render(
+            str(score), True, (255, 0, 0)), (width // 2, 5))
 
-    # Handle enemies
-    for enemy in enemies:
-        # Move enemy and blit to screen
-        enemy[1] = enemy[1].move(-enemy[2], 0)
-        main_window.blit(image_enemy, enemy[1])
+        # Handle enemies
+        for enemy in enemies:
+            # Move enemy and blit to screen
+            enemy[1] = enemy[1].move(-enemy[2], 0)
+            main_window.blit(image_enemy, enemy[1])
 
-        # Remove enemies that go off screen
-        if enemy[1].left < 0:
-            enemies.pop(enemies.index(enemy))
+            # Remove enemies that go off screen
+            if enemy[1].left < 0:
+                enemies.pop(enemies.index(enemy))
 
-        # Check for collision with object
-        if enemy[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
-            text = my_font.render(
-                f'{player_name} EARNED {score} POINTS', True, (0, 255, 0))
-            text_rect = text.get_rect()
-            text_x = width // 2 - text_rect.width // 2
-            text_y = height // 2 - text_rect.height // 2
-            main_window.blit(text, [text_x, text_y])
-            pygame.display.update()
-            time.wait(3000)
-            running = False
+            # Check for collision with object
+            if enemy[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
+                text = my_font.render(
+                    f'{player_name} EARNED {score} POINTS', True, (0, 255, 0))
+                text_rect = text.get_rect()
+                text_x = width // 2 - text_rect.width // 2
+                text_y = height // 2 - text_rect.height // 2
+                main_window.blit(text, [text_x, text_y])
+                pygame.display.flip()
+                pygame.time.delay(2000)
+                game_state = "menu"
 
-    # Handle weapons
-    for weapon in weapons:
-        # Move weapon and blit to screen
-        weapon[1] = weapon[1].move(0, weapon[2])
-        main_window.blit(image_weapon, weapon[1])
+        # Handle weapons
+        for weapon in weapons:
+            # Move weapon and blit to screen
+            weapon[1] = weapon[1].move(0, weapon[2])
+            main_window.blit(image_weapon, weapon[1])
 
-        # Remove weapons that go off screen
-        if weapon[1].bottom >= height:
-            weapons.pop(weapons.index(weapon))
+            # Remove weapons that go off screen
+            if weapon[1].bottom >= height:
+                weapons.pop(weapons.index(weapon))
 
-        # Check for collision with object
-        if weapon[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
-            weapons.remove(weapon)
-            score += 1
+            # Check for collision with object
+            if weapon[1].colliderect(pygame.Rect(obj_x, obj_y, image_obj.get_width(), image_obj.get_height())):
+                weapons.remove(weapon)
+                score += 1
 
     # Update the display
     pygame.display.flip()
