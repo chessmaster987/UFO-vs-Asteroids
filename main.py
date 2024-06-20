@@ -2,6 +2,8 @@ import pygame
 import random as rd
 from random import randrange
 from pygame import font, time
+import sqlite3
+import datetime
 
 # Initialize Pygame
 pygame.init()
@@ -39,6 +41,65 @@ image_bckg_speed = 3
 obj_x = width // 2
 obj_y = height // 2
 obj_speed = 10
+
+# Database initialization
+def init_db():
+    conn = sqlite3.connect('game_records.db')
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS records (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_name TEXT,
+                        score INTEGER,
+                        game_time TEXT
+                    )''')
+    conn.commit()
+    conn.close()
+
+# Function to insert data into the database
+def insert_record(player_name, score):
+    conn = sqlite3.connect('game_records.db')
+    cursor = conn.cursor()
+    game_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute('''INSERT INTO records (player_name, score, game_time) 
+                      VALUES (?, ?, ?)''', (player_name, score, game_time))
+    conn.commit()
+    conn.close()
+
+# Function to retrieve data from the database
+def fetch_records():
+    conn = sqlite3.connect('game_records.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT player_name, score, game_time FROM records''')
+    records = cursor.fetchall()
+    conn.close()
+    return records
+
+# Function to display the game archive
+def display_archive():
+    records = fetch_records()
+    main_window.fill(BLACK)
+    font = pygame.font.Font(None, 36)
+    headers = ["Player Name", "Score", "Game Time"]
+    header_text = " | ".join(headers)
+    header_surface = font.render(header_text, True, WHITE)
+    header_rect = header_surface.get_rect(topleft=(50, 50))
+    main_window.blit(header_surface, header_rect.topleft)
+
+    y_offset = header_rect.bottom + 20
+    for record in records:
+        record_text = " | ".join(map(str, record))
+        record_surface = font.render(record_text, True, WHITE)
+        record_rect = record_surface.get_rect(topleft=(50, y_offset))
+        main_window.blit(record_surface, record_rect.topleft)
+        y_offset += record_rect.height + 5
+    
+    back_button = Button(width // 2 - 100, height - 100, 200, 50, "Back", back_to_menu)
+    back_button.draw(main_window)
+    
+    pygame.display.flip()
+
+# Initialize the database
+init_db()
 
 # Function to create an enemy
 def create_enemy():
@@ -111,7 +172,13 @@ def initialize_game():
 
 # Function to handle game archive
 def game_archive():
-    print("Game archive functionality goes here.")
+    global game_state
+    game_state = "archive"
+    display_archive()
+
+def back_to_menu():
+    global game_state
+    game_state = "menu"
 
 # Function to quit the game
 def quit_game():
@@ -163,6 +230,7 @@ def get_name():
 start_button = Button(width // 2 - 100, height // 2 - 100, 200, 50, "Start Game", start_game)
 archive_button = Button(width // 2 - 100, height // 2, 200, 50, "Game Archive", game_archive)
 quit_button = Button(width // 2 - 100, height // 2 + 100, 200, 50, "Quit Game", quit_game)
+back_button = Button(width // 2 - 100, height - 100, 200, 50, "Back", back_to_menu)
 
 # Main game state
 game_state = "menu"
@@ -194,6 +262,9 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     get_name()
+        elif game_state == "archive":
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                back_button.clicked()
 
     if game_state == "menu":
         main_window.fill(BLACK)
@@ -256,6 +327,10 @@ while running:
                 main_window.blit(text, [text_x, text_y])
                 pygame.display.flip()
                 pygame.time.delay(2000)
+
+                # Insert record into database
+                insert_record(player_name, score)
+
                 game_state = "menu"
 
         # Handle weapons
