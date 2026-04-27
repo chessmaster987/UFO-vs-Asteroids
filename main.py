@@ -12,7 +12,12 @@ def resource_path(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 
-DB_PATH = resource_path("game_records.db")
+def get_app_dir():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.abspath(".")
+
+DB_PATH = os.path.join(get_app_dir(), "game_records.db")
 
 # Initialize Pygame
 pygame.init()
@@ -192,7 +197,7 @@ def back_to_menu():
 # Function to quit the game
 def quit_game():
     pygame.quit()
-    exit()
+    sys.exit()
 
 def get_name():
     global player_name, game_state
@@ -207,7 +212,7 @@ def get_name():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     input_active = False
