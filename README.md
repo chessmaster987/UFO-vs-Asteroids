@@ -1,25 +1,81 @@
-# UFO vs Asteroids
-## Демонстрація роботи програми / Demonstration of the program's working
-[Демонстрація роботи програми UFO vs Asteroids, перегляньте відео](https://github.com/chessmaster987/UFO-vs-Asteroids/raw/main/Demonstration/UfoVSAsteroids_gameplay.mp4)
+# 🛸UFO vs Asteroids
 
-## Інструкція користувача / User manual
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
+![Pygame](https://img.shields.io/badge/Pygame-Game%20Engine-green)
+![SQLite](https://img.shields.io/badge/Database-SQLite-blue?logo=sqlite)
+![Type](https://img.shields.io/badge/project-arcade%20game-orange)
+![Platform](https://img.shields.io/badge/platform-desktop-lightgrey)
 
-При входу у гру користувачу представляється наступний інтерфейс: / When entering the game, users are presented with the following interface:
+## 🎮 Demo
 
-![Enter the game](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/1_start.PNG)
+Watch gameplay demonstration:
 
-Якщо користувач обере розпочати гру, натиснувши на кнопку "Start game", користувачу буде запропоновано ввести ім'я для початку гри. / If the user chooses to start the game by clicking on the "Start game" button, the user will be prompted to enter a name to start the game.
+[▶️ UFO vs Asteroids gameplay](https://github.com/chessmaster987/UFO-vs-Asteroids/raw/main/Demonstration/UfoVSAsteroids_gameplay.mp4)
 
-![Input name](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/2_enter_players_name.PNG)
+---
 
-Після чого починається гра. Ціль гри - заробляти очки, збираючи бластери та ухилятися від метеоритів. Нижче наведено скриншот ігрового процесу, перегляньте відео за посиланням вище для більш детального огляду / Then the game starts. The goal of the game is to earn points by collecting blasters and avoiding meteors. Here is a screenshot of the gameplay, watch the video at the link above for a more detailed overview 
+## 📌 About the project
 
-![Game process](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/3_game_process.PNG)
+This is a simple 2D arcade game built with **Python + Pygame**.
 
-Також, користувач може переглядати архів усіх своїх ігор / Users can also view the archive of all their games
+The player controls a UFO, collects blasters, earns points, and avoids incoming asteroids.  
+All game sessions are stored in a local database, allowing the player to track their progress over time.
 
-![Game archive](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/4_game_archive.PNG)
+---
 
-Якщо у вас з'явилися якісь питання чи побажання, напишіть мені у лінкедин: / If you have any questions or suggestions, please send me a message on LinkedIn:
+## ⚙️ Features
 
-[Send me a message](https://www.linkedin.com/in/vlad-lavrov)
+- 🚀 Player-controlled UFO movement
+- 🔫 Collectible blasters for scoring
+- ☄️ Dynamic asteroid obstacles
+- 📊 Score tracking system
+- 💾 Game history archive (SQLite database)
+
+---
+
+## 🕹️ How to play
+
+### Start screen
+When launching the game, the player sees the main menu:
+
+![Start screen](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/1_start.PNG)
+
+---
+
+### Enter player name
+Click **"Start game"** and enter your name to begin:
+
+![Enter name](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/2_enter_players_name.PNG)
+
+---
+
+### Gameplay
+Your goal is to:
+- collect blasters 🔫
+- avoid asteroids ☄️
+- score as many points as possible
+
+![Gameplay](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/3_game_process.PNG)
+
+---
+
+### Game archive
+Players can view all previous game sessions and their results:
+
+![Archive](https://github.com/chessmaster987/UFO-vs-Asteroids/blob/main/Demonstration/4_game_archive.PNG)
+
+---
+
+## 🛠️ Technologies
+
+- Python
+- Pygame
+- SQLite3
+
+---
+
+## 📬 Contact
+
+If you have any questions or suggestions, feel free to contact me on LinkedIn:
+
+👉 [Send me a message](https://www.linkedin.com/in/vlad-lavrov)
