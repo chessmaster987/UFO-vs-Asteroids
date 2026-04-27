@@ -4,6 +4,15 @@ from random import randrange
 from pygame import font, time
 import sqlite3
 import datetime
+import os
+import sys
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+DB_PATH = resource_path("game_records.db")
 
 # Initialize Pygame
 pygame.init()
@@ -24,13 +33,13 @@ main_window = pygame.display.set_mode(screen)
 
 # Load images and scale them
 image_obj = pygame.transform.scale(pygame.image.load(
-    './imgs/ufo.png').convert_alpha(), (45, 45))
+    resource_path('imgs/ufo.png')).convert_alpha(), (45, 45))
 image_enemy = pygame.transform.scale(pygame.image.load(
-    './imgs/asteroid.png').convert_alpha(), (70, 50))
+    resource_path('imgs/asteroid.png')).convert_alpha(), (70, 50))
 image_weapon = pygame.transform.scale(pygame.image.load(
-    './imgs/weapon.png').convert_alpha(), (45, 35))
+    resource_path('imgs/weapon.png')).convert_alpha(), (45, 35))
 image_bckg = pygame.transform.scale(pygame.image.load(
-    './imgs/background.jpg').convert(), screen)
+    resource_path('imgs/background.jpg')).convert(), screen)
 
 # Background movement variables
 bckgX = 0
@@ -44,7 +53,7 @@ obj_speed = 10
 
 # Database initialization
 def init_db():
-    conn = sqlite3.connect('game_records.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS records (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,7 +66,7 @@ def init_db():
 
 # Function to insert data into the database
 def insert_record(player_name, score):
-    conn = sqlite3.connect('game_records.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     game_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute('''INSERT INTO records (player_name, score, game_time) 
@@ -67,7 +76,7 @@ def insert_record(player_name, score):
 
 # Function to retrieve data from the database
 def fetch_records():
-    conn = sqlite3.connect('game_records.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''SELECT player_name, score, game_time FROM records''')
     records = cursor.fetchall()
